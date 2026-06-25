@@ -1,8 +1,25 @@
-const dotenv =require("dotenv")
-const express = require("express")
+const dotenv = require("dotenv");
+const express = require("express");
+const { clerkMiddleware } = require('@clerk/express')
+const cors= require("cors")
+dotenv.config();
+
+
+const connectDB = require("./lib/db");
+
 const app = express();
-dotenv.config()
+const PORT = process.env.PORT;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
-const PORT = process.env.PORT
+app.use(express.json())
+app.use(cors({origin:FRONTEND_URL,credentials:true}))
+app.use(clerkMiddleware())
 
-app.listen(PORT,()=> console.log(`Server is running on port ${PORT}`))
+app.get("/health",(req,res)=>{
+    res.status(200).json({message:"ok"})
+})
+
+app.listen(PORT, () => {
+    connectDB()
+  console.log(`Server is running on port ${PORT}`);
+});
